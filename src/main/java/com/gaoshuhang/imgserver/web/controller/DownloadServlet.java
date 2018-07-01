@@ -1,5 +1,6 @@
 package com.gaoshuhang.imgserver.web.controller;
 
+import com.gaoshuhang.imgserver.conf.ImageServerConfig;
 import com.gaoshuhang.imgserver.dao.ImageDao;
 
 import javax.servlet.ServletException;
@@ -22,8 +23,18 @@ public class DownloadServlet extends HttpServlet
 		}
 		else
 		{
+			String scaleStr = request.getParameter("scale");
+			float scale = 1f;
+			if(scaleStr != null && !"".equals(scaleStr) )
+			{
+				scale = Float.parseFloat(scaleStr);
+			}
+
+			if(scale <= 0f) scale = 1f;
+			if(scale > ImageServerConfig.MAX_SCALE) scale = ImageServerConfig.MAX_SCALE;
+
 			ImageDao imageDao = ImageDao.getInstance();
-			boolean result = imageDao.outputImage(response, fileHash);
+			boolean result = imageDao.outputImage(response, fileHash, scale);
 			if(!result)
 			{
 				response.setStatus(404);

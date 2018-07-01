@@ -47,6 +47,9 @@ public class ConfLoader
 			String cacheSizeStr = properties.getProperty("cache_size");
 			if (cacheSizeStr != null)
 				ImageServerConfig.CACHE_SIZE = Integer.parseInt(cacheSizeStr);
+			String maxScaleStr = properties.getProperty("max_scale");
+			if(maxScaleStr != null)
+				ImageServerConfig.MAX_SCALE = Float.parseFloat(maxScaleStr);
 
 		}
 		catch (IOException e)
