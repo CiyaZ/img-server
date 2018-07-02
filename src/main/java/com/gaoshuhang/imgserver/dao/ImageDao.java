@@ -123,19 +123,13 @@ public class ImageDao
 				{
 					imageData = FileUtils.readFileToByteArray(imageFile);
 					this.lruLinkedHashMap.put(fileHash, imageData);
-					OutputStream outputStream = response.getOutputStream();
-					if (scale != 1f)
-						imageData = ImageScaleUtil.scaleImage(imageData, scale);
-					outputStream.write(imageData);
+					writeImageDataToResponse(response, imageData, scale);
 					return true;
 				}
 			}
 			else//缓存中存在该图片
 			{
-				OutputStream outputStream = response.getOutputStream();
-				if (scale != 1f)
-					imageData = ImageScaleUtil.scaleImage(imageData, scale);
-				outputStream.write(imageData);
+				writeImageDataToResponse(response, imageData, scale);
 				return true;
 			}
 		}
@@ -149,12 +143,17 @@ public class ImageDao
 			}
 			else
 			{
-				OutputStream outputStream = response.getOutputStream();
-				if (scale != 1f)
-					imageData = ImageScaleUtil.scaleImage(imageData, scale);
-				outputStream.write(imageData);
+				writeImageDataToResponse(response, imageData, scale);
 				return true;
 			}
 		}
+	}
+
+	private void writeImageDataToResponse(HttpServletResponse response,byte[] imageData, float scale) throws IOException
+	{
+		OutputStream outputStream = response.getOutputStream();
+		if (scale != 1f)
+			imageData = ImageScaleUtil.scaleImage(imageData, scale);
+		outputStream.write(imageData);
 	}
 }
