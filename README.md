@@ -32,3 +32,9 @@
 	"upload_status":"success表示上传成功，failed表示上传失败，上传失败filehash为空字符串"
 }
 ```
+
+## 打包
+
+```
+mvn clean package
+```
