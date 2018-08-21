@@ -1,5 +1,12 @@
-.gradle/*
-.idea/*
-build/*
-out/*
-target/*
+server/.gradle/*
+server/.idea/*
+server/build/*
+server/out/*
+server/target/*
+server/*.iml
+sdk/.gradle/*
+sdk/.idea/*
+sdk/build/*
+sdk/out/*
+sdk/target/*
+sdk/*.iml
