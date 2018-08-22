@@ -14,15 +14,19 @@ public class ImageServerUtil
 	private String token;
 	private String serverUrl;
 
+	private boolean useTokenOnDownload = false;
+	private boolean useTokenOnUpload = true;
+
 	/**
 	 * 初始化SDK工具类
 	 * @param token 操作口令
-	 * @param serverUrl 服务器URL
+	 * @param ip img-server服务器IP地址
+	 * @param port img-server服务器端口
 	 */
-	public ImageServerUtil(String token, String serverUrl)
+	public ImageServerUtil(String token, String ip, int port)
 	{
 		this.token = token;
-		this.serverUrl = serverUrl;
+		this.serverUrl = "http://" + ip + ":" + port;
 	}
 
 	/**
@@ -44,6 +48,42 @@ public class ImageServerUtil
 	}
 
 	/**
+	 * 下载是否使用口令
+	 * @return 下载使用口令返回true，不使用返回false
+	 */
+	public boolean isUseTokenOnDownload()
+	{
+		return useTokenOnDownload;
+	}
+
+	/**
+	 * 设置下载是否使用口令
+	 * @param useTokenOnDownload 下载使用口令true，不使用false
+	 */
+	public void setUseTokenOnDownload(boolean useTokenOnDownload)
+	{
+		this.useTokenOnDownload = useTokenOnDownload;
+	}
+
+	/**
+	 * 上传是否使用口令
+	 * @return 上传使用口令返回true，不使用返回false
+	 */
+	public boolean isUseTokenOnUpload()
+	{
+		return useTokenOnUpload;
+	}
+
+	/**
+	 * 设置上传是否使用口令
+	 * @param useTokenOnUpload 上传使用口令true，不使用false
+	 */
+	public void setUseTokenOnUpload(boolean useTokenOnUpload)
+	{
+		this.useTokenOnUpload = useTokenOnUpload;
+	}
+
+	/**
 	 * 下载图片
 	 * @param fileHash 图片hash值
 	 * @return 图片二进制数据
@@ -52,6 +92,10 @@ public class ImageServerUtil
 	public byte[] downloadImage(String fileHash) throws IOException
 	{
 		String urlStr = serverUrl + "/download?filehash=" + fileHash;
+		if(useTokenOnDownload)
+		{
+			urlStr += "&token=" + token;
+		}
 		return httpImageDownload(urlStr);
 	}
 
@@ -65,6 +109,10 @@ public class ImageServerUtil
 	public byte[] downloadImage(String fileHash, float scale) throws IOException
 	{
 		String urlStr = serverUrl + "/download?filehash=" + fileHash + "&scale=" + scale;
+		if(useTokenOnDownload)
+		{
+			urlStr += "&token=" + token;
+		}
 		return httpImageDownload(urlStr);
 	}
 
@@ -77,6 +125,10 @@ public class ImageServerUtil
 	public String downloadImageBase64(String fileHash) throws IOException
 	{
 		String urlStr = serverUrl + "/download?filehash=" + fileHash;
+		if(useTokenOnDownload)
+		{
+			urlStr += "&token=" + token;
+		}
 		byte[] result = httpImageDownload(urlStr);
 		if (result != null)
 		{
@@ -99,6 +151,10 @@ public class ImageServerUtil
 	public String downloadImageBase64(String fileHash, float scale) throws IOException
 	{
 		String urlStr = serverUrl + "/download?filehash=" + fileHash + "&scale=" + scale;
+		if(useTokenOnDownload)
+		{
+			urlStr += "&token=" + token;
+		}
 		byte[] result = httpImageDownload(urlStr);
 		if (result != null)
 		{
@@ -143,7 +199,12 @@ public class ImageServerUtil
 	 */
 	public String uploadImage(byte[] imageData) throws IOException
 	{
-		String urlStr = serverUrl + "/upload?token=" + token + "&req_type=base64_json";
+		String urlStr = serverUrl + "/upload?req_type=base64_json";
+		if(useTokenOnUpload)
+		{
+			urlStr += "&token=" + token;
+		}
+
 		RequestJson requestJson = new RequestJson();
 		Base64 base64 = new Base64();
 		requestJson.data = base64.encodeToString(imageData);
@@ -166,7 +227,11 @@ public class ImageServerUtil
 	 */
 	public String uploadImageBase64(String imageDataBase64) throws IOException
 	{
-		String urlStr = serverUrl + "/upload?token=" + token + "&req_type=base64_json";
+		String urlStr = serverUrl + "/upload?req_type=base64_json";
+		if(useTokenOnUpload)
+		{
+			urlStr += "&token=" + token;
+		}
 		RequestJson requestJson = new RequestJson();
 		requestJson.data = imageDataBase64;
 		ResponseJson responseJson = httpImageUpload(urlStr, requestJson);
