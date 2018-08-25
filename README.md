@@ -2,6 +2,8 @@
 
 使用Servlet实现的图片服务器。图片按MD5命名，分两级目录存储，使用LRU缓存，上传和下载可限制权限，下载具有图片缩放功能。
 
+## server 服务器部分
+
 * `src/main/resources/imgserver.properties`为配置文件
 	* `basePath`:图片存放路径，必须
 	* `token`：用于上传和下载的身份验证口令，必须配置至少一个，多个用逗号隔开
@@ -32,6 +34,10 @@
 	"upload_status":"success表示上传成功，failed表示上传失败，上传失败filehash为空字符串"
 }
 ```
+
+## sdk 接口封装
+
+封装了HTTP客户端部分，实现图片的上传和下载，用于嵌入Java程序中使用。
 
 ## 打包
 
