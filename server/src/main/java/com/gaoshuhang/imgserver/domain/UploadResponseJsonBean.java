@@ -1,5 +1,10 @@
 package com.gaoshuhang.imgserver.domain;
 
+/**
+ * 上传接口响应JSON
+ *
+ * @author CiyaZ
+ */
 public class UploadResponseJsonBean
 {
 	private String upload_status;

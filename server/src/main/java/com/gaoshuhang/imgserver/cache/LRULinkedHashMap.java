@@ -6,13 +6,15 @@ import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 线程安全的LinkedHashMap
+ *
+ * @author CiyaZ
  */
-public class LRULinkedHashMap<K, V> extends LinkedHashMap<K, V>
+public class LruLinkedHashMap<K, V> extends LinkedHashMap<K, V>
 {
 	private final int maxCapacity;
 	private final Lock lock = new ReentrantLock();
 
-	public LRULinkedHashMap(int maxCapacity)
+	public LruLinkedHashMap(int maxCapacity)
 	{
 		super(maxCapacity, 0.75f, true);
 		this.maxCapacity = maxCapacity;

@@ -14,24 +14,31 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * 图片上传控制器
+ *
+ * @author CiyaZ
+ */
 @MultipartConfig
 @WebServlet(name = "UploadServlet", urlPatterns = "/upload")
 public class UploadServlet extends HttpServlet
 {
 	private static Base64 base64 = new Base64();
 
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		response.setStatus(404);
 		request.getRequestDispatcher("WEB-INF/not_found.jsp").forward(request, response);
 	}
 
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		ImageDao imageDao = ImageDao.getInstance();
 
 		//使用json进行数据交互，图片数据格式为base64
-		if("base64_json".equals(request.getParameter("req_type")))
+		if ("base64_json".equals(request.getParameter("req_type")))
 		{
 			ObjectMapper mapper = new ObjectMapper();
 

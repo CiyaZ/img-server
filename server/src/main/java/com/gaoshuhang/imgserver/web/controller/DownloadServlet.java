@@ -10,13 +10,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * 下载控制器
+ *
+ * @author CiyaZ
+ */
 @WebServlet(name = "DownloadServlet", urlPatterns = "/download")
 public class DownloadServlet extends HttpServlet
 {
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		String fileHash = request.getParameter("filehash");
-		if("".equals(fileHash) || fileHash == null)
+		if ("".equals(fileHash) || fileHash == null)
 		{
 			response.setStatus(404);
 			request.getRequestDispatcher("WEB-INF/not_found.jsp").forward(request, response);
@@ -25,17 +31,23 @@ public class DownloadServlet extends HttpServlet
 		{
 			String scaleStr = request.getParameter("scale");
 			float scale = 1f;
-			if(scaleStr != null && !"".equals(scaleStr) )
+			if (scaleStr != null && !"".equals(scaleStr))
 			{
 				scale = Float.parseFloat(scaleStr);
 			}
 
-			if(scale <= 0f) scale = 1f;
-			if(scale > ImageServerConfig.MAX_SCALE) scale = ImageServerConfig.MAX_SCALE;
+			if (scale <= 0f)
+			{
+				scale = 1f;
+			}
+			if (scale > ImageServerConfig.MAX_SCALE)
+			{
+				scale = ImageServerConfig.MAX_SCALE;
+			}
 
 			ImageDao imageDao = ImageDao.getInstance();
 			boolean result = imageDao.outputImage(response, fileHash, scale);
-			if(!result)
+			if (!result)
 			{
 				response.setStatus(404);
 				request.getRequestDispatcher("WEB-INF/not_found.jsp").forward(request, response);
@@ -43,9 +55,10 @@ public class DownloadServlet extends HttpServlet
 		}
 	}
 
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
-		response.setStatus(404);
-		request.getRequestDispatcher("WEB-INF/not_found.jsp").forward(request, response);
+		response.setStatus(400);
+		request.getRequestDispatcher("WEB-INF/bad_request.jsp").forward(request, response);
 	}
 }

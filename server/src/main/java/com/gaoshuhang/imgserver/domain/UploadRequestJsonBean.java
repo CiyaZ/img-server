@@ -1,5 +1,10 @@
 package com.gaoshuhang.imgserver.domain;
 
+/**
+ * 上传请求JSON
+ *
+ * @author CiyaZ
+ */
 public class UploadRequestJsonBean
 {
 	private String data;

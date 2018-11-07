@@ -1,10 +1,10 @@
 package com.gaoshuhang.imgserver.dao;
 
-import com.gaoshuhang.imgserver.cache.LRULinkedHashMap;
+import com.gaoshuhang.imgserver.cache.LruLinkedHashMap;
 import com.gaoshuhang.imgserver.conf.ImageServerConfig;
 import com.gaoshuhang.imgserver.util.HashUtil;
 import com.gaoshuhang.imgserver.util.ImageScaleUtil;
-import com.gaoshuhang.imgserver.util.LRUCacheUtil;
+import com.gaoshuhang.imgserver.util.LruCacheUtil;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FileUtils;
 
@@ -14,10 +14,15 @@ import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+/**
+ * 图片读写
+ *
+ * @author CiyaZ
+ */
 public class ImageDao
 {
 	private static ImageDao imageDao = new ImageDao();
-	private LRULinkedHashMap<String, byte[]> lruLinkedHashMap;
+	private LruLinkedHashMap<String, byte[]> lruLinkedHashMap;
 
 	private ImageDao()
 	{
@@ -38,7 +43,7 @@ public class ImageDao
 	{
 		try
 		{
-			MessageDigest MD5 = MessageDigest.getInstance("MD5");
+			MessageDigest md5 = MessageDigest.getInstance("MD5");
 
 			InputStream inputStream = part.getInputStream();
 			byte[] buffer = new byte[8192];
@@ -47,10 +52,10 @@ public class ImageDao
 			while ((n = inputStream.read(buffer)) != -1)
 			{
 				byteArrayOutputStream.write(buffer, 0, n);
-				MD5.update(buffer, 0, n);
+				md5.update(buffer, 0, n);
 			}
 			byte[] imageData = byteArrayOutputStream.toByteArray();
-			String fileHash = new String(Hex.encodeHex(MD5.digest()));
+			String fileHash = new String(Hex.encodeHex(md5.digest()));
 
 			String path = HashUtil.getPathFromFileHash(fileHash);
 			File file = new File(path);
@@ -77,8 +82,8 @@ public class ImageDao
 	{
 		try
 		{
-			MessageDigest MD5 = MessageDigest.getInstance("MD5");
-			String fileHash = new String(Hex.encodeHex(MD5.digest(imageData)));
+			MessageDigest md5 = MessageDigest.getInstance("MD5");
+			String fileHash = new String(Hex.encodeHex(md5.digest(imageData)));
 			String path = HashUtil.getPathFromFileHash(fileHash);
 			File file = new File(path);
 			if (!file.exists())
@@ -104,22 +109,28 @@ public class ImageDao
 	public boolean outputImage(HttpServletResponse response, String fileHash, float scale) throws IOException
 	{
 		if (this.lruLinkedHashMap == null)
-			this.lruLinkedHashMap = LRUCacheUtil.getLRULinkedHashMap();
+		{
+			this.lruLinkedHashMap = LruCacheUtil.getLRULinkedHashMap();
+		}
 
 		byte[] imageData = this.lruLinkedHashMap.get(fileHash);
 
-		if (ImageServerConfig.USE_CACHE)//如果启用了图片访问缓存
+		//如果启用了图片访问缓存
+		if (ImageServerConfig.USE_CACHE)
 		{
-
-			if (imageData == null)//缓存中没有这个图片的hash索引
+			//缓存中没有这个图片的hash索引
+			if (imageData == null)
 			{
-				String path = HashUtil.getPathFromFileHash(fileHash);//尝试从文件系统中读取图片
+				//尝试从文件系统中读取图片
+				String path = HashUtil.getPathFromFileHash(fileHash);
 				File imageFile = new File(path);
-				if (!imageFile.exists())//文件系统中也不存在该图片
+				//文件系统中也不存在该图片
+				if (!imageFile.exists())
 				{
 					return false;
 				}
-				else//文件系统中存在该图片
+				//文件系统中存在该图片
+				else
 				{
 					imageData = FileUtils.readFileToByteArray(imageFile);
 					this.lruLinkedHashMap.put(fileHash, imageData);
@@ -127,7 +138,8 @@ public class ImageDao
 					return true;
 				}
 			}
-			else//缓存中存在该图片
+			//缓存中存在该图片
+			else
 			{
 				writeImageDataToResponse(response, imageData, scale);
 				return true;
@@ -149,11 +161,15 @@ public class ImageDao
 		}
 	}
 
-	private void writeImageDataToResponse(HttpServletResponse response,byte[] imageData, float scale) throws IOException
+	private void writeImageDataToResponse(HttpServletResponse response, byte[] imageData, float scale) throws IOException
 	{
 		OutputStream outputStream = response.getOutputStream();
-		if (scale != 1f)
+		// 如果缩放值为1，就不要再调一次缩放功能了，影响性能
+		final float unchangedScale = 1f;
+		if (scale != unchangedScale)
+		{
 			imageData = ImageScaleUtil.scaleImage(imageData, scale);
+		}
 		outputStream.write(imageData);
 	}
 }

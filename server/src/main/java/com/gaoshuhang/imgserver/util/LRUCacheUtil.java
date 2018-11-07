@@ -1,18 +1,23 @@
 package com.gaoshuhang.imgserver.util;
 
-import com.gaoshuhang.imgserver.cache.LRULinkedHashMap;
+import com.gaoshuhang.imgserver.cache.LruLinkedHashMap;
 import com.gaoshuhang.imgserver.conf.ImageServerConfig;
 
-public class LRUCacheUtil
+/**
+ * 缓存处理工具类
+ *
+ * @author CiyaZ
+ */
+public class LruCacheUtil
 {
-	private static LRULinkedHashMap<String, byte[]> lruLinkedHashMap;
+	private static LruLinkedHashMap<String, byte[]> lruLinkedHashMap;
 
-	public static LRULinkedHashMap<String, byte[]> getLRULinkedHashMap()
+	public static LruLinkedHashMap<String, byte[]> getLRULinkedHashMap()
 	{
-		if(LRUCacheUtil.lruLinkedHashMap == null)
+		if (LruCacheUtil.lruLinkedHashMap == null)
 		{
-			LRUCacheUtil.lruLinkedHashMap = new LRULinkedHashMap<>(ImageServerConfig.CACHE_SIZE);
+			LruCacheUtil.lruLinkedHashMap = new LruLinkedHashMap<>(ImageServerConfig.CACHE_SIZE);
 		}
-		return LRUCacheUtil.lruLinkedHashMap;
+		return LruCacheUtil.lruLinkedHashMap;
 	}
 }
