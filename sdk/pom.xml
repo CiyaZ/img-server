@@ -65,6 +65,11 @@
 				<plugin>
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>2.20.1</version>
+					<configuration>
+						<excludes>
+							<exclude>**/ImageServerUtilTest.java</exclude>
+						</excludes>
+					</configuration>
 				</plugin>
 				<plugin>
 					<artifactId>maven-jar-plugin</artifactId>
