@@ -9,7 +9,7 @@
 ```java
 public void initSDKUtil()
 {
-	serverUtil = new ImageServerUtil("gLMhrQ27eaLdK8Eg", "127.0.0.1", 8080);
+	serverUtil = new ImageServerUtil("gLMhrQ27eaLdK8Eg", "127.0.0.1", null, 8080);
 }
 ```
 
