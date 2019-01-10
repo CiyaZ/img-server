@@ -60,9 +60,11 @@ public class ImageServerUtilTest
 		try
 		{
 			byte[] image1 = serverUtil.downloadImage("cd82513c34a9a41e3da5648a5649d92d");
-			byte[] image2 = serverUtil.downloadImage("cd82513c34a9a41e3da5648a5649d92d");
+			byte[] image2 = serverUtil.downloadImage("cd82513c34a9a41e3da5648a5649d92d", .2f);
+			byte[] image3 = serverUtil.downloadImage("cd82513c34a9a41e3da5648a5649d92d", .2f, .2f, .2f);
 			Assert.assertNotNull(image1);
 			Assert.assertNotNull(image2);
+			Assert.assertNotNull(image3);
 		}
 		catch (IOException e)
 		{
@@ -77,9 +79,11 @@ public class ImageServerUtilTest
 		try
 		{
 			String image1 = serverUtil.downloadImageBase64("cd82513c34a9a41e3da5648a5649d92d");
-			String image2 = serverUtil.downloadImageBase64("cd82513c34a9a41e3da5648a5649d92d");
+			String image2 = serverUtil.downloadImageBase64("cd82513c34a9a41e3da5648a5649d92d", .2f);
+			String image3 = serverUtil.downloadImageBase64("cd82513c34a9a41e3da5648a5649d92d", .2f, .2f, .2f);
 			Assert.assertNotNull(image1);
 			Assert.assertNotNull(image2);
+			Assert.assertNotNull(image3);
 		}
 		catch (IOException e)
 		{

@@ -135,7 +135,7 @@ public class ImageServerUtil
 	}
 
 	/**
-	 * 下载图片
+	 * 下载图片，带整体缩放
 	 *
 	 * @param fileHash 图片散列值
 	 * @param scale    缩放浮点值
@@ -153,9 +153,29 @@ public class ImageServerUtil
 	}
 
 	/**
+	 * 下载图片，带整体缩放和宽高缩放
+	 *
+	 * @param fileHash  图片散列值
+	 * @param fullScale 整体缩放浮点值
+	 * @param xScale    宽缩放浮点值
+	 * @param yScale    高缩放浮点值
+	 * @return 图片二进制数据
+	 * @throws IOException IO错误
+	 */
+	public byte[] downloadImage(String fileHash, float fullScale, float xScale, float yScale) throws IOException
+	{
+		String urlStr = serverUrl + "/download?filehash=" + fileHash + "&scale=" + fullScale + "&xScale=" + xScale + "&yScale" + yScale;
+		if (useTokenOnDownload)
+		{
+			urlStr += "&token=" + token;
+		}
+		return httpImageDownload(urlStr);
+	}
+
+	/**
 	 * 以Base64形式下载图片
 	 *
-	 * @param fileHash 图片hash值
+	 * @param fileHash 图片散列值
 	 * @return 图片base64字符串
 	 * @throws IOException IO错误
 	 */
@@ -179,16 +199,45 @@ public class ImageServerUtil
 	}
 
 	/**
-	 * 下载图片base64值
+	 * 以Base64形式下载图片，带整体缩放
 	 *
-	 * @param fileHash 图片hash值
+	 * @param fileHash 图片散列值
 	 * @param scale    缩放浮点值
-	 * @return 图片base64字符串值
+	 * @return 图片base64字符串
 	 * @throws IOException IO错误
 	 */
 	public String downloadImageBase64(String fileHash, float scale) throws IOException
 	{
 		String urlStr = serverUrl + "/download?filehash=" + fileHash + "&scale=" + scale;
+		if (useTokenOnDownload)
+		{
+			urlStr += "&token=" + token;
+		}
+		byte[] result = httpImageDownload(urlStr);
+		if (result != null)
+		{
+			Base64 base64 = new Base64();
+			return base64.encodeToString(result);
+		}
+		else
+		{
+			return null;
+		}
+	}
+
+	/**
+	 * 以Base64形式下载图片，带整体缩放和宽高缩放
+	 *
+	 * @param fileHash  图片散列值
+	 * @param fullScale 整体缩放浮点值
+	 * @param xScale    宽缩放浮点值
+	 * @param yScale    高缩放浮点值
+	 * @return 图片base64字符串
+	 * @throws IOException IO错误
+	 */
+	public String downloadImageBase64(String fileHash, float fullScale, float xScale, float yScale) throws IOException
+	{
+		String urlStr = serverUrl + "/download?filehash=" + fileHash + "&scale=" + fullScale + "&xScale=" + xScale + "&yScale" + yScale;
 		if (useTokenOnDownload)
 		{
 			urlStr += "&token=" + token;

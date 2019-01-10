@@ -13,27 +13,60 @@ import java.io.IOException;
  */
 public class ImageScaleUtil
 {
-	public static byte[] scaleImage(byte[] srcImageBytes, float scale) throws IOException
+	/**
+	 * 缩放图片工具类，可以整体缩放和宽高缩放，两个效果会叠加
+	 *
+	 * @param srcImageBytes 原始图片数据
+	 * @param scale         整体缩放
+	 * @param xScale        宽缩放
+	 * @param yScale        高缩放
+	 * @return 返回整体缩放和宽高缩放后的结果
+	 * @throws IOException IO错误
+	 */
+	public static byte[] scaleImage(byte[] srcImageBytes, float scale, float xScale, float yScale) throws IOException
 	{
-		//将原始图片的二进制数据读入BufferedImage
+		// 将原始图片的二进制数据读入BufferedImage
 		ByteArrayInputStream bis = new ByteArrayInputStream(srcImageBytes);
 		BufferedImage srcImage = ImageIO.read(bis);
 		bis.close();
 
-		//图片缩放
-		BufferedImage resultImage = scaleImage(srcImage, scale);
+		BufferedImage resultImage = null;
+		// 图片整体缩放
+		if (scale != 1f)
+		{
+			resultImage = scale(srcImage, scale, scale);
+		}
+		// 图片长宽单独缩放
+		if (xScale != 1f || yScale != 1f)
+		{
+			if (resultImage != null)
+			{
+				resultImage = scale(resultImage, xScale, yScale);
+			}
+			else
+			{
+				resultImage = scale(srcImage, xScale, yScale);
+			}
+		}
 
-		//将BufferedImage输出到byte[]并返回
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		ImageIO.write(resultImage, "png", bos);
-		return bos.toByteArray();
+		// 将BufferedImage输出到byte[]并返回
+		if (resultImage != null)
+		{
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			ImageIO.write(resultImage, "png", bos);
+			return bos.toByteArray();
+		}
+		else
+		{
+			return srcImageBytes;
+		}
 	}
 
-	private static BufferedImage scaleImage(BufferedImage srcImage, float scale)
+	private static BufferedImage scale(BufferedImage srcImage, float xScale, float yScale)
 	{
 		//获取原始图像的宽度和高度
-		int width = (int) (srcImage.getWidth() * scale);
-		int height = (int) (srcImage.getHeight() * scale);
+		int width = (int) (srcImage.getWidth() * xScale);
+		int height = (int) (srcImage.getHeight() * yScale);
 
 		//不能低于输出图片的下限大小1px*1px
 		if (width <= 0)

@@ -102,11 +102,14 @@ public class ImageDao
 	/**
 	 * 下载，如果缓存里有读缓存，没有不读缓存读文件并写入缓存，如果该文件不存在不会向response写入数据
 	 *
-	 * @param response 响应对象
-	 * @param fileHash 文件MD5
+	 * @param response  响应对象
+	 * @param fileHash  文件MD5
+	 * @param fullScale 整体缩放值
+	 * @param xScale    宽缩放值
+	 * @param yScale    高缩放值
 	 * @return 向response写入了图片数据返回true，否则返回false
 	 */
-	public boolean outputImage(HttpServletResponse response, String fileHash, float scale) throws IOException
+	public boolean outputImage(HttpServletResponse response, String fileHash, float fullScale, float xScale, float yScale) throws IOException
 	{
 		if (this.lruLinkedHashMap == null)
 		{
@@ -134,14 +137,14 @@ public class ImageDao
 				{
 					imageData = FileUtils.readFileToByteArray(imageFile);
 					this.lruLinkedHashMap.put(fileHash, imageData);
-					writeImageDataToResponse(response, imageData, scale);
+					writeImageDataToResponse(response, imageData, fullScale, xScale, yScale);
 					return true;
 				}
 			}
 			//缓存中存在该图片
 			else
 			{
-				writeImageDataToResponse(response, imageData, scale);
+				writeImageDataToResponse(response, imageData, fullScale, xScale, yScale);
 				return true;
 			}
 		}
@@ -155,21 +158,17 @@ public class ImageDao
 			}
 			else
 			{
-				writeImageDataToResponse(response, imageData, scale);
+				writeImageDataToResponse(response, imageData, fullScale, xScale, yScale);
 				return true;
 			}
 		}
 	}
 
-	private void writeImageDataToResponse(HttpServletResponse response, byte[] imageData, float scale) throws IOException
+	private void writeImageDataToResponse(HttpServletResponse response, byte[] imageData, float fullScale, float xScale, float yScale) throws IOException
 	{
 		OutputStream outputStream = response.getOutputStream();
-		// 如果缩放值为1，就不要再调一次缩放功能了，影响性能
-		final float unchangedScale = 1f;
-		if (scale != unchangedScale)
-		{
-			imageData = ImageScaleUtil.scaleImage(imageData, scale);
-		}
+
+		imageData = ImageScaleUtil.scaleImage(imageData, fullScale, xScale, yScale);
 		outputStream.write(imageData);
 	}
 }

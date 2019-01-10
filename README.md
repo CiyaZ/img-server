@@ -15,7 +15,7 @@
 
 * `/upload?token=xxx` POST 上传，表单enctype="multipart/form-data"，上传成功返回文件MD5值
 * `upload?token=xxx&req_type=base64_json` POST 使用JSON字符串上传，图片是BASE64格式编码，不要包含HTML显示用的头信息
-* `/download?filehash=xxx&scale=xxx` GET 下载，filehash是上传后返回的MD5值，必须参数，scale是缩放比例浮点值，非必须参数
+* `/download?filehash=xxx&scale=xxx&xscale=xxx&yscale=xxx` GET 下载，filehash是上传后返回的MD5值，必须参数，scale、xscale、yscale是缩放比例浮点值，都是可选参数，整体缩放和长宽缩放如果同时使用，会导致效果叠加
 * 其余请求一概拦截，转向404错误页
 
 使用json上传时请求和响应的json字符串：
