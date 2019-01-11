@@ -1,5 +1,7 @@
 package com.gaoshuhang.imgserver.util;
 
+import org.apache.tika.Tika;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -53,7 +55,23 @@ public class ImageScaleUtil
 		if (resultImage != null)
 		{
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			ImageIO.write(resultImage, "png", bos);
+
+			// 根据源文件的格式输出图片
+			Tika tika = new Tika();
+			String format = tika.detect(srcImageBytes);
+			if("image/png".equals(format))
+			{
+				ImageIO.write(resultImage, "png", bos);
+			}
+			else if("image/jpg".equals(format) || "image/jpeg".equals(format))
+			{
+				ImageIO.write(resultImage, "jpg", bos);
+			}
+			else if("image/gif".equals(format))
+			{
+				ImageIO.write(resultImage, "gif", bos);
+			}
+
 			return bos.toByteArray();
 		}
 		else

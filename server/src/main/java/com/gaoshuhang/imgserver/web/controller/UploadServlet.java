@@ -5,6 +5,7 @@ import com.gaoshuhang.imgserver.dao.ImageDao;
 import com.gaoshuhang.imgserver.domain.UploadRequestJsonBean;
 import com.gaoshuhang.imgserver.domain.UploadResponseJsonBean;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.tika.Tika;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -48,14 +49,29 @@ public class UploadServlet extends HttpServlet
 				UploadRequestJsonBean reqJson = mapper.readValue(request.getInputStream(), UploadRequestJsonBean.class);
 				String imageBase64 = reqJson.getData();
 				byte[] imageBytes = base64.decode(imageBase64);
-				String fileHash = imageDao.saveImage(imageBytes);
 
-				//组装返回JSON信息
-				UploadResponseJsonBean respJson = new UploadResponseJsonBean();
-				respJson.setUpload_status("success");
-				respJson.setFilehash(fileHash);
+				// 文件类型校验
+				Tika tika = new Tika();
+				String mediaType = tika.detect(imageBytes);
+				if (!"image/png".equals(mediaType)
+						&& !"image/jpg".equals(mediaType)
+						&& !"image/jpeg".equals(mediaType))
+				{
+					// 非支持的图片类型
+					response.getWriter().write("{\"upload_status\":\"failed\", \"filehash\":\"\"}");
+				}
+				else
+				{
+					// 存储到磁盘
+					String fileHash = imageDao.saveImage(imageBytes);
 
-				response.getWriter().write(mapper.writeValueAsString(respJson));
+					//组装返回JSON信息
+					UploadResponseJsonBean respJson = new UploadResponseJsonBean();
+					respJson.setUpload_status("success");
+					respJson.setFilehash(fileHash);
+
+					response.getWriter().write(mapper.writeValueAsString(respJson));
+				}
 			}
 			catch (IOException e)
 			{
@@ -66,9 +82,22 @@ public class UploadServlet extends HttpServlet
 		//使用enctype=multipart/form-data的表单进行数据交互
 		else
 		{
-			String fileHash = imageDao.saveImage(request.getPart("file"));
-
-			response.getWriter().write(fileHash);
+			// 文件类型校验
+			Tika tika = new Tika();
+			String mediaType = tika.detect(request.getPart("file").getInputStream());
+			if (!"image/png".equals(mediaType)
+					&& !"image/jpg".equals(mediaType)
+					&& !"image/jpeg".equals(mediaType)
+					&& !"image/gif".equals(mediaType))
+			{
+				// 非支持的图片类型
+				response.setStatus(400);
+			}
+			else
+			{
+				String fileHash = imageDao.saveImage(request.getPart("file"));
+				response.getWriter().write(fileHash);
+			}
 		}
 	}
 }
