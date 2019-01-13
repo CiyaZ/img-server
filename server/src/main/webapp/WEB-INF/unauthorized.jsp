@@ -4,6 +4,6 @@
 	<title>401</title>
 </head>
 <body>
-<h1>Request Unauthorized</h1>
+<h1>401 Request Unauthorized</h1>
 </body>
 </html>

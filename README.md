@@ -1,6 +1,8 @@
 # 图片服务器
 
-使用Servlet实现的图片服务器。图片按MD5命名，分两级目录存储，使用LRU缓存，上传和下载可限制权限，下载具有图片缩放功能。图片格式支持PNG、JPG、GIF，通过校验其二进制内容，非法格式会被拦截。
+使用Servlet实现的图片服务器。图片按MD5命名，分两级目录存储，使用LRU缓存，上传和下载可限制权限，下载具有图片缩放功能，能够整体缩放和按长宽缩放。
+
+图片格式支持PNG、JPG、GIF，通过校验其二进制内容，非法格式会被拦截，缩放后输出格式与原格式相同。
 
 ## server 服务器部分
 
@@ -14,7 +16,7 @@
 	* `max_scale`：最大的缩放尺寸，比如max_scale=5表示最大的输出图片为原来长宽的5倍（最小尺寸为1px*1px）
 
 * `/upload?token=xxx` POST 上传，表单enctype="multipart/form-data"，上传成功返回文件MD5值
-* `upload?token=xxx&req_type=base64_json` POST 使用JSON字符串上传，图片是BASE64格式编码，不要包含HTML显示用的头信息
+* `/upload?token=xxx&req_type=base64_json` POST 使用JSON字符串上传，图片是BASE64格式编码，不要包含HTML显示用的头信息
 * `/download?filehash=xxx&scale=xxx&xscale=xxx&yscale=xxx` GET 下载，filehash是上传后返回的MD5值，必须参数，scale、xscale、yscale是缩放比例浮点值，都是可选参数，整体缩放和长宽缩放如果同时使用，会导致效果叠加
 * 其余请求一概拦截，转向404错误页
 
@@ -44,3 +46,7 @@
 ```
 mvn clean package
 ```
+
+## 部署
+
+修改配置文件，打包后放进Tomcat的webapps即可。

@@ -46,8 +46,8 @@ public void testDownloadImage()
 }
 ```
 
-## 打包
+## 安装到本地仓库
 
 ```
-mvn package
+mvn clean install
 ```
