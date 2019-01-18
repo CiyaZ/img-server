@@ -111,16 +111,16 @@ public class ImageDao
 	 */
 	public boolean outputImage(HttpServletResponse response, String fileHash, float fullScale, float xScale, float yScale) throws IOException
 	{
-		if (this.lruLinkedHashMap == null)
-		{
-			this.lruLinkedHashMap = LruCacheUtil.getLRULinkedHashMap();
-		}
-
-		byte[] imageData = this.lruLinkedHashMap.get(fileHash);
-
 		//如果启用了图片访问缓存
 		if (ImageServerConfig.USE_CACHE)
 		{
+			if (this.lruLinkedHashMap == null)
+			{
+				this.lruLinkedHashMap = LruCacheUtil.getLRULinkedHashMap();
+			}
+
+			byte[] imageData = this.lruLinkedHashMap.get(fileHash);
+
 			//缓存中没有这个图片的hash索引
 			if (imageData == null)
 			{
@@ -148,16 +148,20 @@ public class ImageDao
 				return true;
 			}
 		}
+		// 不启用缓存
 		else
 		{
 			String path = HashUtil.getPathFromFileHash(fileHash);
 			File imageFile = new File(path);
 			if (!imageFile.exists())
 			{
+				// 文件系统中不存在该图片
 				return false;
 			}
 			else
 			{
+				// 读取文件
+				byte[] imageData = FileUtils.readFileToByteArray(imageFile);
 				writeImageDataToResponse(response, imageData, fullScale, xScale, yScale);
 				return true;
 			}
