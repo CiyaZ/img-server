@@ -27,6 +27,12 @@ public class ImageScaleUtil
 	 */
 	public static byte[] scaleImage(byte[] srcImageBytes, float scale, float xScale, float yScale) throws IOException
 	{
+		if(scale == 1f && xScale == 1f && yScale == 1f)
+		{
+			// 如果不缩放就不要读ImageIO，内存消耗太严重，低内存直接OOM
+			return srcImageBytes;
+		}
+
 		// 将原始图片的二进制数据读入BufferedImage
 		ByteArrayInputStream bis = new ByteArrayInputStream(srcImageBytes);
 		BufferedImage srcImage = ImageIO.read(bis);
