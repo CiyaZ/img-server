@@ -17,4 +17,5 @@ public class ImageServerConfig
 	public static boolean USE_CACHE = true;
 	public static int CACHE_SIZE = 100;
 	public static float MAX_SCALE = 5;
+	public static boolean USE_SCALE = false;
 }

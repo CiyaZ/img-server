@@ -62,6 +62,11 @@ public class ConfLoader
 			{
 				ImageServerConfig.MAX_SCALE = Float.parseFloat(maxScaleStr);
 			}
+			String useScaleStr = properties.getProperty("use_scale");
+			if(useScaleStr != null)
+			{
+				ImageServerConfig.USE_SCALE = Boolean.parseBoolean(useScaleStr);
+			}
 
 		}
 		catch (IOException e)

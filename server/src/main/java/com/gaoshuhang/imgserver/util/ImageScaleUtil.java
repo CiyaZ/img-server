@@ -1,5 +1,6 @@
 package com.gaoshuhang.imgserver.util;
 
+import com.gaoshuhang.imgserver.conf.ImageServerConfig;
 import org.apache.tika.Tika;
 
 import javax.imageio.ImageIO;
@@ -27,7 +28,7 @@ public class ImageScaleUtil
 	 */
 	public static byte[] scaleImage(byte[] srcImageBytes, float scale, float xScale, float yScale) throws IOException
 	{
-		if(scale == 1f && xScale == 1f && yScale == 1f)
+		if((scale == 1f && xScale == 1f && yScale == 1f) || !ImageServerConfig.USE_SCALE)
 		{
 			// 如果不缩放就不要读ImageIO，内存消耗太严重，低内存直接OOM
 			return srcImageBytes;
