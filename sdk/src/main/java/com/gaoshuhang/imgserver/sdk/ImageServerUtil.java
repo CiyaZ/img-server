@@ -31,7 +31,7 @@ public class ImageServerUtil
 	public ImageServerUtil(String token, String ip, String contextPath, int port)
 	{
 		this.token = token;
-		if (contextPath == null)
+		if (contextPath == null || "/".equals(contextPath))
 		{
 			this.serverUrl = "http://" + ip + ":" + port;
 		}
