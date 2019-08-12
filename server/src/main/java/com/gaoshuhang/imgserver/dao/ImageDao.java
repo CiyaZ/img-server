@@ -7,6 +7,8 @@ import com.gaoshuhang.imgserver.util.ImageScaleUtil;
 import com.gaoshuhang.imgserver.util.LruCacheUtil;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
@@ -23,6 +25,8 @@ public class ImageDao
 {
 	private static ImageDao imageDao = new ImageDao();
 	private LruLinkedHashMap<String, byte[]> lruLinkedHashMap;
+
+	private static final Logger logger = LoggerFactory.getLogger(imageDao.getClass());
 
 	private ImageDao()
 	{
@@ -62,6 +66,7 @@ public class ImageDao
 			if (!file.exists())
 			{
 				FileUtils.writeByteArrayToFile(file, imageData);
+				logger.info("Image " + fileHash + " saved at " + path + ".");
 			}
 			return fileHash;
 		}
@@ -73,7 +78,7 @@ public class ImageDao
 	}
 
 	/**
-	 * 上传，适用于小文件，全部数据都在内存byte[]中
+	 * 上传
 	 *
 	 * @param imageData 图片数据的字节数组
 	 * @return 图片MD5
@@ -89,6 +94,7 @@ public class ImageDao
 			if (!file.exists())
 			{
 				FileUtils.writeByteArrayToFile(new File(path), imageData);
+				logger.info("Image " + fileHash + " saved at " + path + ".");
 			}
 			return fileHash;
 		}
@@ -124,12 +130,14 @@ public class ImageDao
 			//缓存中没有这个图片的hash索引
 			if (imageData == null)
 			{
+				logger.info("Image " + fileHash + " cache not exist, try to read from file system.");
 				//尝试从文件系统中读取图片
 				String path = HashUtil.getPathFromFileHash(fileHash);
 				File imageFile = new File(path);
 				//文件系统中也不存在该图片
 				if (!imageFile.exists())
 				{
+					logger.info("Image " + fileHash + " not exist.");
 					return false;
 				}
 				//文件系统中存在该图片
@@ -138,6 +146,7 @@ public class ImageDao
 					imageData = FileUtils.readFileToByteArray(imageFile);
 					this.lruLinkedHashMap.put(fileHash, imageData);
 					writeImageDataToResponse(response, imageData, fullScale, xScale, yScale);
+					logger.info("Image " + fileHash + " served from file system.");
 					return true;
 				}
 			}
@@ -145,6 +154,7 @@ public class ImageDao
 			else
 			{
 				writeImageDataToResponse(response, imageData, fullScale, xScale, yScale);
+				logger.info("Image " + fileHash + " served from cache.");
 				return true;
 			}
 		}
@@ -156,6 +166,7 @@ public class ImageDao
 			if (!imageFile.exists())
 			{
 				// 文件系统中不存在该图片
+				logger.info("Image " + fileHash + " not exist.");
 				return false;
 			}
 			else
@@ -163,6 +174,7 @@ public class ImageDao
 				// 读取文件
 				byte[] imageData = FileUtils.readFileToByteArray(imageFile);
 				writeImageDataToResponse(response, imageData, fullScale, xScale, yScale);
+				logger.info("Image " + fileHash + " served from file system.");
 				return true;
 			}
 		}
